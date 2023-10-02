@@ -3,8 +3,8 @@ Upstream-Name: QRsteganography
 Upstream-Contact: Ondřej Surý <ondrej@sury.org>
 Source: https://github.com/oerdnj/XKOSB-1
 
-# Sample paragraph, commented out:
-#
-# Files: src/*
-# Copyright: $YEAR $NAME <$CONTACT>
-# License: ...
+Files: .gitignore
+       README.md
+       requirements.txt
+Copyright: Ondřej Surý
+License: WTFPL
