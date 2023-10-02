@@ -17,7 +17,15 @@ the same mechanism as when we were encoding it.  The images are XORed
 again and reverse Baker's map is applied on the differences.  This
 gives us the unscrambled secret text.
 
-## Possible improvements
+## Encoding
+
+`python3 ./scramble.py <output.png> "plaintext" "secret text"`
+
+## Decoding
+
+`python3 ./unscramble.py <input.png>`
+
+## Possible improvements and known bugs
 
 1. As the QR code is 1-bit bitmap PNG and the image bits are
    compressed into 8-bit bytes we could decompress the image data into
@@ -34,6 +42,10 @@ gives us the unscrambled secret text.
 3. Instead of using Baker's map, find the edges in the image and
    encode the secret text by expanding the edges of the image, so it
    looks more innoculous to a human eye.
+
+4. Make it work with more QR code versions, error correction levels
+   and binary encoding.  This would also improve the UTF-8
+   compatibility - the plaintext currently MUST be US-ASCII only.
 
 # References
 
