@@ -59,34 +59,38 @@ def bakers(arr):
     
     return fold
 
-def bytes2array(size, bytes):
+def bytes2array(size, bytes_):
     x_size, y_size = size
     arr = np.zeros((y_size, x_size), dtype=np.uint8)
     i = 0
+
+    bytes = np.unpackbits(np.array(bytes_, dtype=np.uint8))
+    
     for y in range(y_size):
         for x in range(x_size):
-            if i < len(bytes):
+            if i < bytes.shape[0]:
                 arr[y][x] = bytes[i]
                 i += 1
             else:
                 break
-        if i >= len(bytes):
+        if i >= bytes.shape[0]:
             break
 
     return arr
 
-def array2bytes(size, arr):
-    x_size, y_size = size
+def array2bytes(size, arr_):
+    x_size, y_size = int(size[0] / 8), size[1]
     i = 0
     bytes = np.empty(x_size * y_size, dtype=np.uint8)
+    arr = np.packbits(arr_, axis=1)
     for y in range(y_size):
         for x in range(x_size):
-            if i < len(bytes):
+            if i < bytes.shape[0]:
                 bytes[i] = arr[y][x]
                 i += 1
             else:
                 break
-        if i >= len(bytes):
+        if i >= bytes.shape[0]:
             break
 
     return bytes.tobytes()

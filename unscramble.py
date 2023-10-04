@@ -10,6 +10,7 @@ from pyzbar.pyzbar import decode
 from PIL import Image
 import pyqrcode
 from pathlib import Path
+from array import array
 
 import bakersmap
 
@@ -20,38 +21,33 @@ if len(sys.argv) != 2:
     usage()
 
 with Image.open(sys.argv[1]) as im:
-    x_size, y_size = int(im.size[0] / 8) , im.size[1]
-    arr = bakersmap.bytes2array((x_size, y_size), im.tobytes())
+    x_size, y_size = im.size
+    arr = bakersmap.bytes2array((x_size, y_size), array('B', im.tobytes()))
 
 qr = decode(im)
 crouching_tiger = qr[0].data.decode('UTF-8')
 
-qr = pyqrcode.create(crouching_tiger)
+qr = pyqrcode.create(crouching_tiger, mode='binary', encoding='UTF-8')
 
 _, fn = tempfile.mkstemp(suffix=".png")
 
 qr.png(fn, scale=8)
 with Image.open(fn) as im:
-    xor_arr = bakersmap.bytes2array((x_size, y_size), im.tobytes())
+    xarr = bakersmap.bytes2array((x_size, y_size), array('B', im.tobytes()))
 
 Path.unlink(fn)
 
-x_offset = 8
-y_offset = 8*8
+narr = np.array(arr, dtype=np.uint8)
+for y in range(y_size):
+    for x in range(x_size):
+        narr[y][x] ^=  xarr[y][x]
 
-xx_size = x_size - (2 * x_offset) - 1
-yy_size = y_size - (2 * y_offset) - 1
-
-narr = np.empty((yy_size, xx_size), dtype=np.uint8)
-for y in range(yy_size):
-    for x in range(xx_size):
-        narr[y][x] = arr[y + y_offset][x + x_offset] ^ xor_arr[y + y_offset][x + x_offset]
-
-N=1019
+#N=1019
+N=13
 
 for n in range(N):
     narr = bakersmap.bakers_rev(narr)
         
-hidden_dragon = bakersmap.array2bytes((xx_size, yy_size), narr).decode("UTF-8")
+hidden_dragon = bakersmap.array2bytes((x_size, y_size), narr).decode('UTF-8')
         
 print(hidden_dragon)

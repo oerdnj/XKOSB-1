@@ -6,6 +6,7 @@
 
 import sys,tempfile
 import numpy as np
+from array import array
 import pyqrcode
 from PIL import Image
 from pathlib import Path
@@ -20,36 +21,31 @@ if len(sys.argv) != 4:
 
 crouching_tiger = sys.argv[2]
 
-hidden_dragon = sys.argv[3]
+hidden_dragon = sys.argv[3].encode('UTF-8')
 
-qr = pyqrcode.create(crouching_tiger)
+qr = pyqrcode.create(crouching_tiger, mode='binary', encoding='UTF-8')
 
 _, fn = tempfile.mkstemp(suffix=".png")
 
 qr.png(fn, scale=8)
 with Image.open(fn) as im:
-    x_size, y_size = int(im.size[0] / 8) , im.size[1]
-    arr = bakersmap.bytes2array((x_size, y_size), im.tobytes())
+    x_size, y_size = im.size
+    arr = bakersmap.bytes2array((x_size, y_size), array('B', im.tobytes()))
     
 Path.unlink(fn)
 
-x_offset = 8
-y_offset = 8*8
+xarr = bakersmap.bytes2array((x_size, y_size), array('B', hidden_dragon))
 
-xx_size = x_size - (2 * x_offset) - 1
-yy_size = y_size - (2 * y_offset) - 1
-
-xor = bakersmap.bytes2array((xx_size, yy_size), bytearray(hidden_dragon, "UTF-8"))
-
-N=1019
+#N=1019
+N=13
 
 for n in range(N):
-    xor = bakersmap.bakers(xor)
+    xarr = bakersmap.bakers(xarr)
 
 narr = np.array(arr, dtype=np.uint8)
-for y in range(yy_size):
-    for x in range(xx_size):
-        narr[y + y_offset][x + x_offset] ^= xor[y][x]
+for y in range(y_size):
+    for x in range(x_size):
+        narr[y][x] ^= xarr[y][x]
 
 new_im = Image.frombytes(data=bakersmap.array2bytes((x_size, y_size), narr), mode='1', size=im.size)
 

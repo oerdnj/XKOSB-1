@@ -27,25 +27,21 @@ gives us the unscrambled secret text.
 
 ## Possible improvements and known bugs
 
-1. As the QR code is 1-bit bitmap PNG and the image bits are
-   compressed into 8-bit bytes we could decompress the image data into
-   the array of bit values for better secret text scrambling to
-   decluster the image glitches.
-
-2. Validate the Baker's Map implementation.  However, the main problem
+1. Validate the Baker's Map implementation.  However, the main problem
    is a lack of implementations in just any language.  There's one
    implementation in Rust and couple of pages in Matlab, but it's also
    absolutely unclear if those are correct.
 
    This implementation in Python is modeled after [2].
 
-3. Instead of using Baker's map, find the edges in the image and
+2. Instead of using Baker's map, find the edges in the image and
    encode the secret text by expanding the edges of the image, so it
    looks more innoculous to a human eye.
 
-4. Make it work with more QR code versions, error correction levels
-   and binary encoding.  This would also improve the UTF-8
-   compatibility - the plaintext currently MUST be US-ASCII only.
+3. Explore the possibility of XOR-ing the hidden text as a QR code
+   as aligned image in the centre of the visible text QR code.  The
+   error correction of the envelope might survive this and the result
+   would look more innocent to a human eye.
 
 # References
 
